@@ -21,7 +21,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-MODEL = tf.keras.models.load_model(r"C:\Users\User\Desktop\final\my-cow-py\my_model.h5")
+# MODEL = tf.keras.models.load_model(r"C:\Users\User\Desktop\final\my-cow-py\my_model.h5")
+
+MODEL = tf.keras.models.load_model(r"/app/my_model.h5")
+
 
 CLASS_NAMES = ['Ayrshire', 'Black-Angus', 'Boran', 'Guernsey', 'Holstein', 'Jersey', 'Sahiwal', 'Zebu']
 
