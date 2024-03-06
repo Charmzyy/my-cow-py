@@ -12,6 +12,7 @@ app = FastAPI()
 origins = [
     "http://localhost",
     "http://localhost:8001",
+    "https://my-cow-rest.onrender.com",
 ]
 app.add_middleware(
     CORSMiddleware,
@@ -54,9 +55,9 @@ async def predict(file: UploadFile = File(...)):
     print("Predicted class index:", predicted_class_index)  # Print the predicted class index
 
     predicted_class = CLASS_NAMES[predicted_class_index]
-    confidence = float(np.max(predictions[0]))
+    confidence = float(np.max(predictions[0])) * 100
 
-    if confidence < 0.48:
+    if confidence < 48:
         return {
             'class': 'Not a cow',
             'confidence': confidence
