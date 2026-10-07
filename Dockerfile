@@ -3,7 +3,7 @@ FROM python:3.9
 RUN apt-get update && apt-get install -y libgl1-mesa-glx
 
 WORKDIR /app
-COPY . /app
+COPY . .
 
 RUN pip install uvicorn fastapi numpy pillow opencv-python python-multipart
 
