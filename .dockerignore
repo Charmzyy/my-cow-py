@@ -1,0 +1,12 @@
+# Not needed in the image: keeps the build context small and fast
+.git
+.gitignore
+*.ipynb
+.ipynb_checkpoints/
+my_model.h5
+__pycache__/
+*.pyc
+Dockerfile
+.dockerignore
+docker-compose*.yml
+README.md

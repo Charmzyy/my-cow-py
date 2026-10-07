@@ -1,9 +1,16 @@
-version: '3.8'
-
+# DEV compose for the prediction service:
+#   docker compose up -d --build      then open http://localhost:8003/docs
 services:
   model:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
+    image: cow-py:dev
     ports:
       - "8003:8003"
+    healthcheck:
+      # slim image has no curl, so use Python itself; start_period covers TensorFlow's slow model load
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8003/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped

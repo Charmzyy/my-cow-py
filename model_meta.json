@@ -1,0 +1,27 @@
+{
+  "class_names": [
+    "Ayrshire",
+    "Black-Angus",
+    "Boran",
+    "Guernsey",
+    "Holstein",
+    "Jersey",
+    "Sahiwal",
+    "Zebu"
+  ],
+  "img_size": 224,
+  "input": "RGB, float 0-255, resized to img_size (no /255 scaling)",
+  "threshold": 0.6,
+  "tensorflow": "2.21.0",
+  "keras": "3.13.2",
+  "metrics": {
+    "train_acc": 0.9596,
+    "val_acc": 0.9238,
+    "test_acc": 0.9109
+  },
+  "counts": {
+    "train": 1411,
+    "val": 302,
+    "test": 303
+  }
+}

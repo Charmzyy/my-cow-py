@@ -1,0 +1,10 @@
+# Model runtime: must match the versions in model_meta.json (what Colab trained/saved with)
+tensorflow==2.21.0
+keras==3.13.2
+
+# API
+fastapi
+uvicorn
+python-multipart
+pillow
+opencv-python-headless   # headless = no GUI libs, so no libgl1 apt package needed
