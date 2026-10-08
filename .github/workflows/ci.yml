@@ -1,0 +1,67 @@
+# ---------------------------------------------------------------------------
+# my-cow-py CI/CD
+#   every push / pull request -> build the image and smoke-test it (the model must load, /health = 200)
+#   push a tag like v3        -> the above, then push charmzzy/cow-py:v3 to Docker Hub
+# Repo secrets needed: DOCKERHUB_USERNAME, DOCKERHUB_TOKEN
+# ---------------------------------------------------------------------------
+name: ci
+
+on:
+  push:
+    branches: ["**"]
+    tags: ["v*"]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+
+      # load: true keeps the image in this runner's Docker so we can run it. The TensorFlow layer
+      # is cached between runs (type=gha), so only code/model changes rebuild.
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: cow-py:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Start it and wait up to ~2 min for the model to load. Prints the logs if it never comes up.
+      - name: Smoke test /health
+        run: |
+          docker run -d --name model -p 8003:8003 cow-py:ci
+          for i in $(seq 1 60); do
+            if curl -fsS http://localhost:8003/health; then echo; echo "model is up"; exit 0; fi
+            sleep 2
+          done
+          docker logs model
+          exit 1
+
+  publish:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: smoke
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64
+          tags: |
+            charmzzy/cow-py:${{ github.ref_name }}
+            charmzzy/cow-py:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
